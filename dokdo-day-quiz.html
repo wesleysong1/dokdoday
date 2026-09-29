@@ -1,0 +1,698 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>독도의 날 퀴즈 · 10월 25일</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700&family=IBM+Plex+Sans+KR:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --sea-night:#081a28;
+    --sea-deep:#10293c;
+    --mist:#e9eef1;
+    --mist-dim:#a9bcc7;
+    --ink:#0e1d27;
+    --basalt:#2b343c;
+    --basalt-lit:#3d4952;
+    --dawn:#eaa32c;
+    --dawn-deep:#b97a13;
+    --o:#2f8f77;
+    --x:#c05a4e;
+  }
+  *{box-sizing:border-box;}
+  html,body{
+    margin:0;padding:0;min-height:100%;
+    background:
+      radial-gradient(120% 60% at 50% 0%, #1b3d52 0%, var(--sea-deep) 45%, var(--sea-night) 100%);
+    background-attachment:fixed;
+    color:var(--mist);
+    font-family:'IBM Plex Sans KR',system-ui,sans-serif;
+    -webkit-font-smoothing:antialiased;
+  }
+  .stage{max-width:600px;margin:0 auto;padding:34px 18px 64px;min-height:100vh;display:flex;flex-direction:column;}
+
+  /* ---------- masthead ---------- */
+  .masthead{text-align:center;margin-bottom:26px;}
+  .horizon{display:block;width:150px;height:62px;margin:0 auto 14px;}
+  .event-date{font-family:'Gowun Batang',serif;font-size:14px;color:var(--dawn);letter-spacing:.06em;margin:0 0 4px;}
+  .event-title{font-family:'Gowun Batang',serif;font-weight:700;font-size:clamp(28px,7.5vw,38px);margin:0;line-height:1.25;}
+  .event-sub{font-size:13px;color:var(--mist-dim);margin:9px 0 0;line-height:1.6;}
+  .coords{font-size:11.5px;color:rgba(169,188,199,.6);margin-top:7px;font-variant-numeric:tabular-nums;}
+
+  /* ---------- panels ---------- */
+  .panel{
+    background:var(--mist);color:var(--ink);border-radius:6px 6px 18px 18px;
+    padding:30px 24px 26px;box-shadow:0 20px 44px rgba(0,0,0,.4);
+    border-top:4px solid var(--dawn);
+  }
+  .panel h2{font-family:'Gowun Batang',serif;font-weight:700;font-size:21px;margin:0 0 10px;text-align:center;}
+  .lead{font-size:14px;line-height:1.75;color:rgba(14,29,39,.72);text-align:center;margin:0 0 22px;}
+
+  /* ---------- one-shot warning ---------- */
+  .warning{
+    border:1.5px solid var(--dawn-deep);border-radius:12px;
+    background:linear-gradient(180deg,rgba(234,163,44,.16),rgba(234,163,44,.05));
+    padding:17px 18px;margin-bottom:20px;
+  }
+  .warning h3{font-family:'Gowun Batang',serif;font-size:17px;margin:0 0 8px;color:#7d5309;}
+  .warning ul{margin:0;padding-left:18px;font-size:13.5px;line-height:1.85;color:rgba(14,29,39,.85);}
+  .warning ul b{color:#7d5309;}
+
+  /* ---------- prize rules ---------- */
+  .rule{display:flex;gap:13px;align-items:center;padding:13px 15px;border-radius:12px;margin-bottom:9px;}
+  .rule .r-ic{font-size:25px;flex-shrink:0;width:30px;text-align:center;}
+  .rule.top{background:rgba(234,163,44,.14);border:1px solid rgba(234,163,44,.45);}
+  .rule.base{background:rgba(14,29,39,.055);}
+  .rule .r-txt b{display:block;font-size:14px;margin-bottom:2px;}
+  .rule .r-txt span{font-size:12.5px;color:rgba(14,29,39,.62);line-height:1.5;}
+
+  /* ---------- stock ---------- */
+  .stock{border:1px solid rgba(14,29,39,.14);border-radius:12px;padding:15px 16px;margin:16px 0 18px;background:rgba(255,255,255,.55);}
+  .stock-top{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:10px;gap:10px;}
+  .stock-label{font-size:12.5px;font-weight:600;display:flex;align-items:center;gap:7px;}
+  .live-dot{width:8px;height:8px;border-radius:50%;background:var(--o);animation:pulse 2s infinite;}
+  @keyframes pulse{0%{box-shadow:0 0 0 0 rgba(47,143,119,.55);}70%{box-shadow:0 0 0 8px rgba(47,143,119,0);}100%{box-shadow:0 0 0 0 rgba(47,143,119,0);}}
+  .stock-count{font-variant-numeric:tabular-nums;white-space:nowrap;}
+  .stock-count b{font-family:'Gowun Batang',serif;font-weight:700;font-size:28px;color:var(--dawn-deep);}
+  .stock-count span{font-size:14px;color:rgba(14,29,39,.45);}
+  .stock-bar{height:8px;border-radius:999px;background:rgba(14,29,39,.12);overflow:hidden;}
+  .stock-bar i{display:block;height:100%;width:0%;border-radius:999px;background:linear-gradient(90deg,#f4cd80,var(--dawn));transition:width .5s ease;}
+  .stock-note{font-size:11.5px;color:rgba(14,29,39,.58);margin-top:9px;line-height:1.5;}
+  .stock.sold-out .stock-count b{color:var(--x);}
+  .stock.sold-out .stock-bar i{background:var(--x);}
+
+  /* ---------- form ---------- */
+  .field{margin-bottom:13px;}
+  .field label{display:block;font-size:12.5px;font-weight:600;margin-bottom:6px;}
+  .field input{width:100%;padding:13px 14px;font-size:15px;border:1.5px solid rgba(14,29,39,.18);border-radius:10px;background:#fff;color:var(--ink);font-family:inherit;}
+  .field input:focus{outline:none;border-color:var(--dawn);box-shadow:0 0 0 3px rgba(234,163,44,.25);}
+  .confirm{display:flex;gap:10px;align-items:flex-start;font-size:13px;line-height:1.55;margin:16px 0 6px;cursor:pointer;}
+  .confirm input{width:19px;height:19px;flex-shrink:0;margin:1px 0 0;accent-color:var(--dawn-deep);}
+  .form-error{color:var(--x);font-size:13px;min-height:19px;margin:3px 0 6px;text-align:center;}
+
+  .big-btn{width:100%;background:var(--ink);color:var(--mist);border:none;font-family:inherit;font-weight:600;font-size:16.5px;padding:15px;border-radius:999px;cursor:pointer;box-shadow:0 10px 22px rgba(14,29,39,.3);transition:transform .12s ease;}
+  .big-btn:hover{transform:translateY(-2px);}
+  .big-btn:active{transform:translateY(1px);}
+  .big-btn:disabled{opacity:.45;cursor:not-allowed;transform:none;}
+  .fineprint{font-size:11.5px;color:rgba(14,29,39,.5);text-align:center;margin-top:13px;line-height:1.6;}
+
+  /* ---------- quiz ---------- */
+  .whoami{text-align:center;font-size:12px;color:var(--mist-dim);margin-bottom:13px;opacity:.8;}
+  .progress-wrap{display:flex;gap:6px;justify-content:center;margin-bottom:16px;flex-wrap:wrap;}
+  .dot{width:8px;height:8px;border-radius:50%;background:rgba(233,238,241,.2);transition:all .25s ease;}
+  .dot.answered{background:var(--mist-dim);}
+  .dot.current{width:11px;height:11px;background:var(--dawn);box-shadow:0 0 0 3px rgba(234,163,44,.3);}
+  .score-line{text-align:center;font-size:12.5px;color:var(--mist-dim);margin-bottom:16px;font-variant-numeric:tabular-nums;}
+  .score-line b{color:var(--dawn);}
+
+  .card{
+    background:var(--mist);color:var(--ink);border-radius:6px 6px 18px 18px;border-top:4px solid var(--dawn);
+    padding:26px 24px 28px;flex:1;display:flex;flex-direction:column;min-height:340px;
+    box-shadow:0 20px 44px rgba(0,0,0,.4);
+  }
+  .qnum{font-family:'Gowun Batang',serif;font-weight:700;font-size:13px;color:var(--dawn);background:var(--ink);padding:5px 13px;border-radius:999px;align-self:flex-start;margin-bottom:18px;}
+  .question{font-family:'Gowun Batang',serif;font-weight:700;font-size:clamp(18px,4.9vw,22px);line-height:1.7;margin:0 0 26px;flex:1;word-break:keep-all;}
+
+  /* keycaps — the prize is a keycap keyring, so the answer keys are keys */
+  .choices{display:flex;gap:20px;justify-content:center;margin-top:auto;}
+  .key{
+    position:relative;width:112px;height:112px;border:none;padding:0;cursor:pointer;
+    border-radius:13px;background:linear-gradient(180deg,var(--basalt-lit),var(--basalt));
+    box-shadow:0 7px 0 #0f161c, 0 13px 20px rgba(0,0,0,.3);
+    transition:transform .09s ease, box-shadow .09s ease;
+  }
+  .key .cap{
+    position:absolute;inset:6px 6px 10px;border-radius:9px;
+    background:linear-gradient(180deg,rgba(255,255,255,.07),rgba(0,0,0,.18));
+    display:flex;align-items:center;justify-content:center;
+    font-family:'Gowun Batang',serif;font-weight:700;font-size:44px;line-height:1;
+    transition:color .12s ease, background .12s ease;
+  }
+  .key.o .cap{color:#6fd4b6;}
+  .key.x .cap{color:#f09287;}
+  .key:active{transform:translateY(5px);box-shadow:0 2px 0 #0f161c, 0 5px 10px rgba(0,0,0,.3);}
+  .key.pressed{transform:translateY(5px);box-shadow:0 2px 0 #0f161c, 0 5px 10px rgba(0,0,0,.3);}
+  .key.o.pressed{background:linear-gradient(180deg,#3aa98d,#237a63);}
+  .key.o.pressed .cap{color:#fff;background:linear-gradient(180deg,rgba(255,255,255,.14),rgba(0,0,0,.12));}
+  .key.x.pressed{background:linear-gradient(180deg,#d16b5e,#9e4239);}
+  .key.x.pressed .cap{color:#fff;background:linear-gradient(180deg,rgba(255,255,255,.14),rgba(0,0,0,.12));}
+  .key:focus-visible{outline:3px solid var(--dawn);outline-offset:4px;}
+
+  .pick-hint{text-align:center;font-size:12.5px;color:rgba(14,29,39,.55);margin-top:16px;min-height:19px;}
+  .nav-row{display:flex;justify-content:center;margin-top:18px;}
+  .next-btn{background:var(--dawn);color:var(--ink);border:none;font-family:inherit;font-weight:700;font-size:15px;padding:13px 34px;border-radius:999px;cursor:pointer;box-shadow:0 8px 20px rgba(234,163,44,.3);transition:transform .12s ease;opacity:0;pointer-events:none;}
+  .next-btn.ready{opacity:1;pointer-events:auto;}
+  .next-btn:hover{transform:translateY(-2px);}
+  .next-btn:disabled{opacity:.5;}
+
+  /* ---------- result ---------- */
+  .result-panel{text-align:center;}
+  .result-label{font-size:11.5px;letter-spacing:.14em;color:rgba(14,29,39,.5);margin-bottom:4px;}
+  .result-score{font-family:'Gowun Batang',serif;font-weight:700;font-size:58px;margin:4px 0 0;line-height:1;}
+  .result-score .denom{font-size:24px;color:rgba(14,29,39,.45);}
+  .result-msg{font-size:14.5px;margin:12px 0 20px;color:rgba(14,29,39,.75);line-height:1.7;word-break:keep-all;}
+  .prize-award{margin:4px 0 20px;padding:26px 20px;border-radius:14px;}
+  .prize-award.keyring{background:linear-gradient(150deg,#f6d590,var(--dawn));color:#432d06;box-shadow:0 12px 28px rgba(234,163,44,.35);}
+  .prize-award.none{background:rgba(14,29,39,.06);color:var(--ink);}
+  .prize-award .pa-icon{font-size:44px;}
+  .prize-award .pa-label{font-size:12px;font-weight:600;opacity:.75;margin-top:4px;}
+  .prize-award .pa-name{font-family:'Gowun Batang',serif;font-weight:700;font-size:22px;margin:5px 0 6px;}
+  .prize-award .pa-desc{font-size:13.5px;line-height:1.6;word-break:keep-all;}
+  .pickup{margin-top:14px;padding:11px 14px;border-radius:10px;background:rgba(0,0,0,.09);font-size:13px;font-weight:600;}
+  .result-note{font-size:11.5px;color:rgba(14,29,39,.5);line-height:1.6;}
+  .locked-icon{font-size:44px;margin-bottom:6px;}
+
+  /* ---------- steps ---------- */
+  .steps{display:flex;justify-content:center;gap:8px;margin:0 0 20px;font-size:12px;}
+  .steps .st{display:flex;align-items:center;gap:6px;color:rgba(14,29,39,.45);}
+  .steps .st b{width:19px;height:19px;border-radius:50%;background:rgba(14,29,39,.13);color:rgba(14,29,39,.6);
+    display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;}
+  .steps .st.on{color:var(--ink);font-weight:600;}
+  .steps .st.on b{background:var(--dawn);color:var(--ink);}
+  .steps .sep{color:rgba(14,29,39,.25);}
+
+  /* ---------- postcard ---------- */
+  .postcard{
+    position:relative;border:1px solid rgba(14,29,39,.22);border-radius:8px;background:#fffdf6;
+    padding:16px 16px 12px;box-shadow:0 4px 0 rgba(14,29,39,.06);
+  }
+  .pc-stamp{
+    position:absolute;top:12px;right:14px;width:52px;height:60px;border-radius:3px;
+    border:2px dashed rgba(14,29,39,.28);display:flex;align-items:center;justify-content:center;background:#fff;
+  }
+  .pc-stamp svg{width:40px;height:34px;}
+  .pc-to{font-family:'Gowun Batang',serif;font-size:15px;margin:2px 0 3px;}
+  .pc-to b{font-size:21px;font-weight:700;margin-left:6px;}
+  .pc-coord{font-size:10.5px;color:rgba(14,29,39,.5);margin-bottom:12px;font-variant-numeric:tabular-nums;}
+  .pc-rule{height:1px;background:repeating-linear-gradient(to right,rgba(14,29,39,.18) 0 7px,transparent 7px 13px);margin-bottom:12px;}
+  .postcard textarea{
+    width:100%;min-height:132px;resize:vertical;border:none;outline:none;background:transparent;
+    font-family:inherit;font-size:14.5px;line-height:2.05;color:var(--ink);
+    background-image:repeating-linear-gradient(transparent 0 28.7px, rgba(14,29,39,.13) 28.7px 29.7px);
+  }
+  .postcard textarea::placeholder{color:rgba(14,29,39,.33);}
+  .pc-foot{display:flex;justify-content:space-between;align-items:baseline;margin-top:9px;font-size:11.5px;color:rgba(14,29,39,.5);gap:10px;}
+  .pc-foot .pc-count{font-variant-numeric:tabular-nums;}
+  .pc-foot .pc-count.short{color:var(--x);}
+  .pc-from{font-family:'Gowun Batang',serif;color:rgba(14,29,39,.7);}
+  .pc-echo{
+    text-align:left;background:#fffdf6;border:1px solid rgba(14,29,39,.16);border-radius:8px;
+    padding:14px 15px;margin:0 0 18px;font-size:13.5px;line-height:1.85;white-space:pre-wrap;word-break:break-word;
+  }
+  .pc-echo .pe-label{font-size:11px;letter-spacing:.1em;color:rgba(14,29,39,.45);margin-bottom:7px;font-weight:600;}
+  .seal{
+    display:inline-flex;align-items:center;gap:7px;background:rgba(47,143,119,.14);color:#1d6f5b;
+    border:1px solid rgba(47,143,119,.4);border-radius:999px;padding:6px 15px;font-size:12.5px;font-weight:600;margin-bottom:6px;
+  }
+  .config-warn{background:var(--x);color:#fff;border-radius:12px;padding:12px 16px;font-size:13px;line-height:1.6;margin-bottom:16px;text-align:center;}
+
+  .spinner{display:inline-block;width:15px;height:15px;border:2.5px solid rgba(233,238,241,.3);border-top-color:var(--dawn);border-radius:50%;animation:spin .7s linear infinite;vertical-align:-2px;}
+  @keyframes spin{to{transform:rotate(360deg);}}
+
+  .hidden{display:none !important;}
+  @media (max-width:400px){.key{width:96px;height:96px;}.key .cap{font-size:38px;}.choices{gap:15px;}}
+  @media (prefers-reduced-motion:reduce){*{transition:none !important;animation:none !important;}}
+</style>
+</head>
+<body>
+<div class="stage">
+
+  <header class="masthead">
+    <svg class="horizon" viewBox="0 0 150 62" aria-label="동해 위로 해가 떠오르는 독도">
+      <circle cx="75" cy="30" r="15" fill="#eaa32c" opacity=".9"/>
+      <path d="M46 46 L58 22 L66 31 L72 26 L80 46 Z" fill="#0e1d27"/>
+      <path d="M84 46 L92 30 L100 38 L104 34 L110 46 Z" fill="#0e1d27"/>
+      <path d="M0 47 H150" stroke="#e9eef1" stroke-opacity=".35" stroke-width="1.2"/>
+      <path d="M8 53 q10 -3 20 0 t20 0 t20 0 t20 0 t20 0 t20 0" fill="none" stroke="#e9eef1" stroke-opacity=".18" stroke-width="1.2"/>
+    </svg>
+    <p class="event-date">10월 25일</p>
+    <h1 class="event-title">독도의 날 퀴즈</h1>
+    <p class="event-sub">1900년 오늘, 대한제국은 칙령 제41호를 반포해<br>독도가 울도군 관할임을 문서로 새겼습니다.</p>
+    <p class="coords">북위 37°14′ · 동경 131°52′ · 울릉도에서 87.4km</p>
+  </header>
+
+  <!-- ===== Entry ===== -->
+  <div id="entryScreen">
+    <div id="configWarn" class="config-warn hidden">
+      Supabase 설정이 필요합니다. 파일 상단의 <b>SUPABASE_URL</b>과 <b>SUPABASE_ANON_KEY</b>를 입력해 주세요.
+    </div>
+
+    <div class="panel">
+      <h2>참여 안내</h2>
+      <p class="lead">문제 은행에서 <b>5문제</b>가 무작위로 출제됩니다.<br>퀴즈를 푼 뒤 <b>독도에게 엽서</b>까지 써야 응모가 완료돼요.</p>
+
+      <div class="steps">
+        <span class="st on"><b>1</b>OX 퀴즈</span><span class="sep">→</span>
+        <span class="st on"><b>2</b>엽서 쓰기</span><span class="sep">→</span>
+        <span class="st on"><b>3</b>응모 완료</span>
+      </div>
+
+      <div class="warning">
+        <h3>기회는 단 한 번입니다</h3>
+        <ul>
+          <li>한 사람당 <b>1회만</b> 응시할 수 있고, 제출 후에는 다시 풀 수 없어요.</li>
+          <li>문장을 <b>끝까지 천천히</b> 읽어 주세요. 한 단어 때문에 답이 바뀌는 문제가 있습니다.</li>
+          <li>정답 여부는 문제마다 알려주지 않고 <b>마지막에 점수로만</b> 공개됩니다.</li>
+          <li>다음 문제로 넘어가기 전까지는 O · X 선택을 바꿀 수 있어요.</li>
+          <li><b>엽서를 제출해야 응모 완료</b>입니다. 중간에 나가면 참여로 인정되지 않아요.</li>
+        </ul>
+      </div>
+
+      <div class="rule top">
+        <div class="r-ic">⌨️</div>
+        <div class="r-txt"><b>5문제 모두 정답 → 독도 키캡 키링</b><span>선착순 40개 한정. 한 문제라도 틀리면 상품이 없습니다.</span></div>
+      </div>
+
+      <div class="stock" id="stockBox">
+        <div class="stock-top">
+          <div class="stock-label"><span class="live-dot"></span> 남은 독도 키캡 키링</div>
+          <div class="stock-count"><b id="stockNum">–</b><span id="stockTotal"> / 40</span></div>
+        </div>
+        <div class="stock-bar"><i id="stockBar"></i></div>
+        <div class="stock-note" id="stockNote">실시간 재고를 불러오는 중…</div>
+      </div>
+
+      <div class="field"><label for="inpNum">학번</label><input id="inpNum" type="text" inputmode="numeric" placeholder="예) 3601" autocomplete="off"></div>
+      <div class="field"><label for="inpName">이름</label><input id="inpName" type="text" placeholder="예) 송우현" autocomplete="off"></div>
+
+      <label class="confirm" for="chkRead">
+        <input type="checkbox" id="chkRead">
+        <span>안내를 읽었고, <b>기회가 한 번뿐</b>이라는 점을 확인했습니다.</span>
+      </label>
+
+      <div class="form-error" id="formError"></div>
+      <button class="big-btn" id="startBtn">퀴즈 시작하기</button>
+      <p class="fineprint">시작 버튼을 누르면 곧바로 1번 문제가 나옵니다.</p>
+    </div>
+  </div>
+
+  <!-- ===== Already done ===== -->
+  <div id="lockedScreen" class="hidden">
+    <div class="panel result-panel">
+      <div class="locked-icon">🔒</div>
+      <h2>이미 참여했어요</h2>
+      <p class="lead" id="lockedInfo"></p>
+      <div id="lockedPrize"></div>
+    </div>
+  </div>
+
+  <!-- ===== Quiz ===== -->
+  <div id="quizScreen" class="hidden">
+    <div class="whoami" id="whoami"></div>
+    <div class="progress-wrap" id="progressWrap"></div>
+    <div class="score-line" id="scoreLine"></div>
+    <div class="card">
+      <span class="qnum" id="qnum">Q1</span>
+      <p class="question" id="questionText"></p>
+      <div class="choices">
+        <button class="key o" id="btnO" aria-label="맞다"><span class="cap">O</span></button>
+        <button class="key x" id="btnX" aria-label="틀리다"><span class="cap">X</span></button>
+      </div>
+      <div class="pick-hint" id="pickHint">O 또는 X를 눌러 주세요</div>
+    </div>
+    <div class="nav-row"><button class="next-btn" id="nextBtn">다음 문제</button></div>
+  </div>
+
+  <!-- ===== Postcard ===== -->
+  <div id="postcardScreen" class="hidden">
+    <div class="panel">
+      <div class="steps">
+        <span class="st"><b>1</b>OX 퀴즈</span><span class="sep">→</span>
+        <span class="st on"><b>2</b>엽서 쓰기</span><span class="sep">→</span>
+        <span class="st"><b>3</b>응모 완료</span>
+      </div>
+      <h2>독도에게 엽서 쓰기</h2>
+      <p class="lead">마지막 단계예요. 이 엽서를 제출해야 응모가 완료됩니다.<br>짧아도 좋으니 독도에게 하고 싶은 말을 남겨 주세요.</p>
+
+      <div class="postcard">
+        <div class="pc-stamp">
+          <svg viewBox="0 0 40 34" aria-hidden="true">
+            <circle cx="20" cy="11" r="6" fill="#eaa32c"/>
+            <path d="M7 24 L13 12 L17 17 L20 14 L24 24 Z" fill="#0e1d27"/>
+            <path d="M24 24 L28 17 L32 21 L34 19 L37 24 Z" fill="#0e1d27"/>
+            <path d="M2 26 H38" stroke="#0e1d27" stroke-opacity=".35" stroke-width="1"/>
+          </svg>
+        </div>
+        <p class="pc-to">받는 이<b>독도</b></p>
+        <p class="pc-coord">북위 37°14′ 동경 131°52′ · 경상북도 울릉군 울릉읍 독도리</p>
+        <div class="pc-rule"></div>
+        <textarea id="pcText" maxlength="200" placeholder="예) 아직 가 본 적은 없지만, 오늘 네가 어디에 있는지 정확히 알게 됐어."></textarea>
+        <div class="pc-foot">
+          <span class="pc-count" id="pcCount">0 / 200자</span>
+          <span class="pc-from" id="pcFrom"></span>
+        </div>
+      </div>
+
+      <div class="form-error" id="pcError"></div>
+      <button class="big-btn" id="pcSubmit">엽서 제출하고 응모 완료</button>
+      <p class="fineprint">제출한 엽서는 부스 게시판에 이름과 함께 전시될 수 있어요.<br>공개해도 괜찮은 내용으로 써 주세요.</p>
+    </div>
+  </div>
+
+  <!-- ===== Result ===== -->
+  <div id="resultScreen" class="hidden">
+    <div class="panel result-panel">
+      <div class="seal">✓ 응모가 완료되었습니다</div>
+      <div class="result-label">퀴즈 결과</div>
+      <div class="result-score"><span id="finalCorrect">0</span><span class="denom"> / 5</span></div>
+      <div class="result-msg" id="resultMsg"></div>
+      <div id="prizeAward"></div>
+      <div class="pc-echo" id="pcEcho"></div>
+      <p class="result-note">문제별 정답은 공개되지 않으며, 퀴즈는 1회만 응시할 수 있어요.<br>궁금한 문제는 부스 담당 선생님께 물어보세요.</p>
+    </div>
+  </div>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+/* ============================================================
+   ① Supabase 설정
+   Project Settings > API 에서 확인한 값으로 바꾸세요.
+   함께 제공한 dokdo-quiz-supabase.sql 을 SQL Editor 에서 먼저 실행하세요.
+   테이블과 함수 이름이 dokdo_ 로 시작하므로 이전 '교육활동보호 퀴즈'와
+   같은 프로젝트를 써도 기록이 섞이지 않습니다.
+   ============================================================ */
+const SUPABASE_URL = "https://iuxztdbnkomzryvjdmok.supabase.co";
+const SUPABASE_ANON_KEY = "sb_publishable_GD-K83rOj-lod-tdLiC8wA_sgBYqSfi";
+
+const RPC_STOCK   = "dokdo_get_stock";
+const RPC_CHECK   = "dokdo_check_participant";
+const RPC_SUBMIT  = "dokdo_submit_quiz";
+
+/* ============================================================
+   ② 행사 설정
+   ============================================================ */
+const QUESTIONS_PER_QUIZ = 5;
+const PRIZE_TOTAL   = 40;              // 독도 키캡 키링 수량 (DB 값이 오면 그 값으로 대체)
+const PRIZE_NAME    = "독도 키캡 키링";
+const PICKUP_PLACE  = "본관 1층 독도의 날 부스";
+const POSTCARD_MIN  = 15;              // 엽서 최소 글자 수
+const POSTCARD_MAX  = 200;             // 엽서 최대 글자 수
+
+/* ============================================================
+   ③ 문제 은행 — 이 중 5문제 무작위 출제 (자유롭게 추가/수정)
+   ============================================================ */
+const QUESTION_POOL = [
+  /* --- 독도의 날 --- */
+  { q: "독도의 날은 매년 10월 25일이다.", a: "O" },
+  { q: "독도의 날은 광복절과 같은 8월 15일이다.", a: "X" },
+  { q: "독도의 날은 1900년 대한제국 칙령 제41호가 반포된 날을 기념하는 날이다.", a: "O" },
+  { q: "독도의 날은 2000년 민간단체 '독도수호대'가 제정했다.", a: "O" },
+  { q: "독도의 날은 일제강점기부터 나라에서 기념해 온 날이다.", a: "X" },
+  { q: "독도의 날은 아직 법으로 정해진 국가기념일은 아니다.", a: "O" },
+  { q: "경상북도는 10월을 '독도의 달'로 정하고 있다.", a: "O" },
+  { q: "일본 시마네현은 2월 22일을 '다케시마의 날'로 정해 행사를 열고 있다.", a: "O" },
+
+  /* --- 위치와 주소 --- */
+  { q: "독도는 경상북도 울릉군 울릉읍 독도리에 속한다.", a: "O" },
+  { q: "독도는 강원도에 속한 섬이다.", a: "X" },
+  { q: "독도는 우리나라 영토 중 가장 동쪽에 있다.", a: "O" },
+  { q: "우리나라에서 가장 동쪽에 있는 땅은 울릉도이다.", a: "X" },
+  { q: "독도는 울릉도보다 일본 오키섬에서 더 가깝다.", a: "X" },
+  { q: "맑은 날에는 울릉도에서 독도를 눈으로 볼 수 있다.", a: "O" },
+  { q: "독도는 제주도보다 남쪽에 있다.", a: "X" },
+  { q: "독도에는 '40240'이라는 우편번호가 있다.", a: "O" },
+  { q: "독도는 주소도 우편번호도 따로 없는 땅이다.", a: "X" },
+  { q: "독도에 가려면 보통 울릉도를 거쳐 배를 타고 간다.", a: "O" },
+
+  /* --- 섬의 생김새와 자연 --- */
+  { q: "독도는 커다란 섬 하나로만 이루어져 있다.", a: "X" },
+  { q: "독도는 동도와 서도, 그리고 여러 개의 작은 바위섬으로 이루어져 있다.", a: "O" },
+  { q: "독도는 화산 활동으로 만들어진 섬이다.", a: "O" },
+  { q: "독도는 산호가 오랫동안 쌓여 만들어진 산호섬이다.", a: "X" },
+  { q: "독도는 천연기념물로 지정된 천연보호구역이다.", a: "O" },
+  { q: "독도에는 괭이갈매기가 무리를 지어 산다.", a: "O" },
+  { q: "독도는 바위섬이라 나무나 풀이 단 한 포기도 자라지 않는다.", a: "X" },
+  { q: "옛날 독도 주변에는 '강치'라고 불리던 바다사자가 살았다.", a: "O" },
+  { q: "강치는 지금도 독도 주변에 아주 많이 살고 있다.", a: "X" },
+  { q: "독도 주변 바다는 물고기가 잘 잡히는 좋은 어장으로 알려져 있다.", a: "O" },
+  { q: "독도는 우리나라에서 해가 가장 먼저 뜨는 곳 중 하나이다.", a: "O" },
+
+  /* --- 역사 --- */
+  { q: "512년 신라의 이사부 장군이 우산국을 복속시켰다는 기록이 남아 있다.", a: "O" },
+  { q: "조선 시대 어부 안용복은 일본에 건너가 울릉도와 독도가 조선 땅임을 따졌다.", a: "O" },
+  { q: "'독도'라는 이름은 '돌섬'을 뜻하는 말에서 비롯되었다는 견해가 있다.", a: "O" },
+  { q: "일본은 1905년 독도를 시마네현에 넣는다고 일방적으로 고시했다.", a: "O" },
+  { q: "일본의 시마네현 고시는 대한제국 칙령 제41호보다 먼저 있었던 일이다.", a: "X" },
+  { q: "옛 우리 문헌에는 독도를 가리키는 '우산도'라는 이름이 등장한다.", a: "O" },
+  { q: "일본은 독도에 대해 아무런 주장을 하지 않고 있다.", a: "X" },
+
+  /* --- 오늘의 독도 --- */
+  { q: "독도는 사람이 살 수 없어 아무도 없는 무인도이다.", a: "X" },
+  { q: "독도에는 주민이 주소를 두고 살고 있다.", a: "O" },
+  { q: "독도 경비는 군대가 아니라 경찰인 독도경비대가 맡고 있다.", a: "O" },
+  { q: "독도에는 등대가 세워져 있다.", a: "O" },
+  { q: "독도는 법으로 막혀 있어 일반인은 절대 들어갈 수 없다.", a: "X" },
+  { q: "일반인도 정해진 절차를 거치면 독도에 들어갈 수 있다.", a: "O" },
+  { q: "독도는 지금 국제기구가 맡아 관리하고 있다.", a: "X" },
+  { q: "'독도는 우리 땅'이라는 노래는 2020년대에 처음 만들어졌다.", a: "X" },
+  { q: "독도를 지키는 가장 확실한 방법은 큰 목소리로 외치는 것이 아니라 정확히 아는 것이다.", a: "O" }
+];
+
+/* ============================================================
+   ④ 초기화
+   ============================================================ */
+const configured = !SUPABASE_URL.includes("YOUR-PROJECT") && !SUPABASE_ANON_KEY.includes("YOUR-ANON");
+let sb = null;
+if (configured) sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+let quizQuestions = [], userAnswers = [], current = 0, selected = null;
+let studentNum = "", studentName = "";
+
+const $ = id => document.getElementById(id);
+const entryScreen=$('entryScreen'), lockedScreen=$('lockedScreen'), quizScreen=$('quizScreen'),
+      postcardScreen=$('postcardScreen'), resultScreen=$('resultScreen');
+const pcText=$('pcText'), pcCount=$('pcCount'), pcFrom=$('pcFrom'), pcError=$('pcError'), pcSubmit=$('pcSubmit');
+const inpNum=$('inpNum'), inpName=$('inpName'), chkRead=$('chkRead'), formError=$('formError'), startBtn=$('startBtn');
+const progressWrap=$('progressWrap'), scoreLine=$('scoreLine'), whoami=$('whoami');
+const qnumEl=$('qnum'), questionText=$('questionText'), btnO=$('btnO'), btnX=$('btnX'), pickHint=$('pickHint'), nextBtn=$('nextBtn');
+
+if (!configured) $('configWarn').classList.remove('hidden');
+$('stockTotal').textContent = " / " + PRIZE_TOTAL;
+
+/* ===== 실시간 재고 ===== */
+async function refreshStock(){
+  if (!configured){ $('stockNote').textContent = "설정 후 재고가 표시됩니다."; $('stockNum').textContent="–"; return; }
+  try{
+    const { data, error } = await sb.rpc(RPC_STOCK);
+    if (error) throw error;
+    const row = Array.isArray(data) ? data[0] : data;
+    const remaining = row.remaining;
+    const total = row.total || PRIZE_TOTAL;
+    $('stockNum').textContent = remaining;
+    $('stockTotal').textContent = " / " + total;
+    $('stockBar').style.width = Math.max(0, Math.min(100, (remaining/total)*100)) + "%";
+    const box = $('stockBox');
+    if (remaining <= 0){
+      box.classList.add('sold-out');
+      $('stockNote').textContent = PRIZE_NAME + "이 모두 나갔어요. 아쉽지만 상품 지급은 마감되었습니다.";
+    } else {
+      box.classList.remove('sold-out');
+      $('stockNote').textContent = "5문제를 모두 맞힌 학생에게 선착순으로 드립니다.";
+    }
+  }catch(e){
+    $('stockNote').textContent = "재고를 불러오지 못했어요. 잠시 후 다시 시도합니다.";
+  }
+}
+if (configured){ refreshStock(); setInterval(refreshStock, 6000); window.addEventListener('focus', refreshStock); }
+else refreshStock();
+
+/* ===== 시작 ===== */
+startBtn.addEventListener('click', async () => {
+  const num = inpNum.value.trim(), name = inpName.value.trim();
+  if(!num || !name){ formError.textContent = "학번과 이름을 모두 입력해 주세요."; return; }
+  if(!chkRead.checked){ formError.textContent = "안내 확인란에 체크해 주세요."; return; }
+  if(!configured){ formError.textContent = "Supabase 설정이 필요합니다."; return; }
+  formError.textContent = "";
+  studentNum = num; studentName = name;
+
+  startBtn.disabled = true;
+  const orig = startBtn.textContent;
+  startBtn.innerHTML = '<span class="spinner"></span> 확인 중…';
+  try{
+    const { data, error } = await sb.rpc(RPC_CHECK, { p_num: num, p_name: name });
+    if (error) throw error;
+    if (Array.isArray(data) && data.length > 0){ showLocked(data[0].score, data[0].prize, data[0].message); return; }
+    beginQuiz();
+  }catch(e){
+    formError.textContent = "네트워크 오류로 시작하지 못했어요. 다시 시도해 주세요.";
+  }finally{
+    startBtn.disabled = false; startBtn.textContent = orig;
+  }
+});
+
+function beginQuiz(){
+  quizQuestions = pickRandom(QUESTION_POOL, QUESTIONS_PER_QUIZ);
+  userAnswers = new Array(quizQuestions.length).fill(null);
+  current = 0; selected = null;
+  whoami.textContent = `${studentNum} ${studentName}`;
+  entryScreen.classList.add('hidden');
+  quizScreen.classList.remove('hidden');
+  buildDots(); renderQuestion();
+  window.scrollTo({top:0});
+}
+
+function pickRandom(arr, n){
+  const c = arr.slice();
+  for(let i=c.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [c[i],c[j]]=[c[j],c[i]]; }
+  return c.slice(0, Math.min(n, c.length));
+}
+
+/* ===== 이미 참여 ===== */
+function showLocked(score, prize, message){
+  entryScreen.classList.add('hidden');
+  lockedScreen.classList.remove('hidden');
+  $('lockedInfo').innerHTML = `<b>${studentNum} ${studentName}</b> 님은 이미 응모를 마쳤어요.<br>결과: <b>${score} / ${QUESTIONS_PER_QUIZ}</b>`;
+  $('lockedPrize').innerHTML = prizeCardHTML(prize)
+    + (message ? `<div class="pc-echo"><div class="pe-label">독도에게 보낸 엽서</div>${escapeHTML(message)}</div>` : '');
+}
+
+/* ===== 진행 ===== */
+function buildDots(){
+  progressWrap.innerHTML='';
+  quizQuestions.forEach((_,i)=>{ const d=document.createElement('div'); d.className='dot'; d.id='dot'+i; progressWrap.appendChild(d); });
+}
+function updateDots(){
+  quizQuestions.forEach((_,i)=>{ const d=$('dot'+i); d.classList.remove('answered','current');
+    if(userAnswers[i]!==null) d.classList.add('answered'); if(i===current) d.classList.add('current'); });
+}
+function updateScoreLine(){
+  const done=userAnswers.filter(a=>a!==null).length;
+  scoreLine.innerHTML=`문제 <b>${current+1}</b> / ${quizQuestions.length} &nbsp; 응답 완료 <b>${done}</b>개`;
+}
+function renderQuestion(){
+  const item=quizQuestions[current];
+  qnumEl.textContent='Q'+(current+1);
+  questionText.textContent=item.q;
+  selected=userAnswers[current];
+  btnO.classList.toggle('pressed',selected==='O');
+  btnX.classList.toggle('pressed',selected==='X');
+  pickHint.textContent = selected ? '선택을 바꾸려면 다른 쪽을 눌러 주세요' : 'O 또는 X를 눌러 주세요';
+  nextBtn.textContent=(current===quizQuestions.length-1)?'엽서 쓰러 가기':'다음 문제';
+  nextBtn.classList.toggle('ready',selected!==null);
+  updateDots(); updateScoreLine();
+}
+function pick(choice){
+  selected=choice; userAnswers[current]=choice;
+  btnO.classList.toggle('pressed',choice==='O'); btnX.classList.toggle('pressed',choice==='X');
+  pickHint.textContent='선택을 바꾸려면 다른 쪽을 눌러 주세요'; nextBtn.classList.add('ready');
+  updateDots(); updateScoreLine();
+}
+btnO.addEventListener('click',()=>pick('O'));
+btnX.addEventListener('click',()=>pick('X'));
+nextBtn.addEventListener('click',()=>{
+  if(selected===null) return;
+  if(current<quizQuestions.length-1){ current++; renderQuestion(); window.scrollTo({top:0,behavior:'smooth'}); }
+  else goToPostcard();
+});
+
+/* ===== 상품 카드 ===== */
+function prizeCardHTML(prize){
+  if(prize==='keyring'){
+    return `<div class="prize-award keyring">
+      <div class="pa-icon">⌨️</div>
+      <div class="pa-label">만점입니다</div>
+      <div class="pa-name">${PRIZE_NAME}</div>
+      <div class="pa-desc">5문제를 모두 맞혔어요. 독도가 새겨진 키캡 키링을 받아 가세요.</div>
+      <div class="pickup">받는 곳 · ${PICKUP_PLACE}</div>
+    </div>`;
+  }
+  return `<div class="prize-award none">
+    <div class="pa-icon">🪨</div>
+    <div class="pa-label">이번에는 아쉽게 됐어요</div>
+    <div class="pa-name">상품 없음</div>
+    <div class="pa-desc">키캡 키링은 5문제를 모두 맞힌 학생에게만 드립니다. 참여해 줘서 고마워요.</div>
+  </div>`;
+}
+
+/* ===== 엽서 단계 ===== */
+function goToPostcard(){
+  quizScreen.classList.add('hidden');
+  postcardScreen.classList.remove('hidden');
+  pcFrom.textContent = `보내는 이 ${studentNum} ${studentName}`;
+  pcText.setAttribute('maxlength', POSTCARD_MAX);
+  updatePcCount();
+  window.scrollTo({top:0});
+  pcText.focus();
+}
+function updatePcCount(){
+  const n = pcText.value.trim().length;
+  pcCount.textContent = `${n} / ${POSTCARD_MAX}자`;
+  pcCount.classList.toggle('short', n > 0 && n < POSTCARD_MIN);
+}
+pcText.addEventListener('input', () => { updatePcCount(); pcError.textContent=''; });
+
+pcSubmit.addEventListener('click', () => {
+  const msg = pcText.value.trim();
+  if(msg.length < POSTCARD_MIN){
+    pcError.textContent = `엽서를 ${POSTCARD_MIN}자 이상 써 주세요. (현재 ${msg.length}자)`;
+    pcText.focus();
+    return;
+  }
+  pcError.textContent = '';
+  submitEntry(msg);
+});
+
+/* ===== 최종 제출 — 퀴즈 채점 + 엽서를 한 번에 저장 ===== */
+async function submitEntry(message){
+  let correct=0;
+  quizQuestions.forEach((item,i)=>{ if(userAnswers[i]===item.a) correct++; });
+
+  pcSubmit.disabled=true;
+  const origLabel = pcSubmit.textContent;
+  pcSubmit.innerHTML='<span class="spinner"></span> 제출 중…';
+
+  let prize = correct>=QUESTIONS_PER_QUIZ ? 'keyring' : 'none';
+  let status = 'ok';
+  let savedMessage = message;
+  let failed = false;
+  try{
+    const { data, error } = await sb.rpc(RPC_SUBMIT, {
+      p_num: studentNum, p_name: studentName, p_score: correct, p_message: message
+    });
+    if (error) throw error;
+    const row = Array.isArray(data) ? data[0] : data;
+    if (row){
+      status = row.status;
+      prize = row.prize;
+      correct = row.score;
+      if (row.message) savedMessage = row.message;
+    }
+  }catch(e){
+    failed = true;
+  }finally{
+    pcSubmit.disabled=false; pcSubmit.textContent=origLabel;
+  }
+
+  if (failed){
+    pcError.textContent = "제출에 실패했어요. 잠시 후 다시 눌러 주세요. (응모는 아직 완료되지 않았습니다)";
+    return;
+  }
+
+  postcardScreen.classList.add('hidden');
+  resultScreen.classList.remove('hidden');
+  $('finalCorrect').textContent = correct;
+  window.scrollTo({top:0});
+
+  let msg;
+  if(status==='already') msg="이미 참여한 기록이 있어 이전 결과를 보여드려요.";
+  else if(correct>=QUESTIONS_PER_QUIZ && prize==='keyring') msg="완벽해요. 5문제를 모두 맞혔습니다.";
+  else if(correct>=QUESTIONS_PER_QUIZ) msg="만점이에요! 다만 "+PRIZE_NAME+"이 모두 나가서 상품은 마감되었어요.";
+  else if(correct===QUESTIONS_PER_QUIZ-1) msg="한 문제 차이로 아쉬웠어요. 부스의 독도 이야기를 꼭 보고 가세요.";
+  else msg="참여해 줘서 고마워요. 부스의 독도 이야기를 보고 가세요.";
+  $('resultMsg').textContent = msg;
+
+  $('prizeAward').innerHTML = prizeCardHTML(prize);
+  $('pcEcho').innerHTML = `<div class="pe-label">독도에게 보낸 엽서</div>${escapeHTML(savedMessage)}`;
+  refreshStock();
+}
+
+function escapeHTML(t){
+  return String(t).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+</script>
+</body>
+</html>
